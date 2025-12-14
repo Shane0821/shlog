@@ -1,9 +1,12 @@
 #pragma once
 
 #include <iostream>
+#include <memory>
 #include <string>
 
 #include "uring_aio.h"
+
+namespace shlog {
 
 using LogMessage = std::string;
 
@@ -62,3 +65,6 @@ class ConsoleSink : public LogSinkBase {
     void log(LogMessage& msg) override { std::cout << msg.data(); }
     void flush() override { fflush(stdout); }
 };
+
+using SinkPtr = std::unique_ptr<LogSinkBase>;
+}  // namespace shlog

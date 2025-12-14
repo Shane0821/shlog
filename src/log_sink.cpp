@@ -10,6 +10,7 @@
 #include <sstream>
 #include <system_error>
 
+namespace shlog {
 FileSinkBase::FileSinkBase(const std::string& file_path, bool append) {
     open(file_path, append);
 }
@@ -75,3 +76,4 @@ UringFileSink::~UringFileSink() { flush(); }
 void UringFileSink::log(LogMessage& msg) { aio_.write_async(msg, -1, 0); }
 
 void UringFileSink::flush() { aio_.fsync_and_wait(0); }
+}
