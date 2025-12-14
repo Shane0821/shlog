@@ -21,32 +21,32 @@ class Timer {
 };
 
 TEST(LoggerTest, ConsoleSink) {
-    LOG_INIT(Logger::LogLevel::DEBUG);
+    SHLOG_INIT(shlog::LogLevel::DEBUG);
     for (size_t i = 0; i < write_count; i++) {
-        LOG_INFO("SQPoll Test INFO: {}", i);
-        LOG_DEBUG("SQPoll Test DEBUG: {}", i);
-        LOG_ERROR("SQPoll Test ERROR: {}", i);
+        SHLOG_INFO("SQPoll Test INFO: {}", i);
+        SHLOG_DEBUG("SQPoll Test DEBUG: {}", i);
+        SHLOG_ERROR("SQPoll Test ERROR: {}", i);
     }
 }
 
 TEST(LoggerTest, StandardFileSink) {
-    LOG_INIT(Logger::LogLevel::DEBUG, std::make_unique<StandardFileSink>());
+    SHLOG_INIT(shlog::LogLevel::DEBUG, std::make_unique<shlog::StandardFileSink>());
     Timer t;
     for (size_t i = 0; i < write_count; i++) {
-        LOG_INFO("SQPoll Test INFO: {}", i);
-        LOG_DEBUG("SQPoll Test DEBUG: {}", i);
-        LOG_ERROR("SQPoll Test ERROR: {}", i);
+        SHLOG_INFO("SQPoll Test INFO: {}", i);
+        SHLOG_DEBUG("SQPoll Test DEBUG: {}", i);
+        SHLOG_ERROR("SQPoll Test ERROR: {}", i);
     }
     std::cout << "Time elapsed: " << t.elapsed() << " seconds\n";
 }
 
 TEST(LoggerTest, UringFileSink) {
-    LOG_INIT(Logger::LogLevel::DEBUG, std::make_unique<UringFileSink>());
+    SHLOG_INIT(shlog::LogLevel::DEBUG, std::make_unique<shlog::UringFileSink>());
     Timer t;
     for (size_t i = 0; i < write_count; i++) {
-        LOG_INFO("SQPoll Test INFO: {}", i);
-        LOG_DEBUG("SQPoll Test DEBUG: {}", i);
-        LOG_ERROR("SQPoll Test ERROR: {}", i);
+        SHLOG_INFO("SQPoll Test INFO: {}", i);
+        SHLOG_DEBUG("SQPoll Test DEBUG: {}", i);
+        SHLOG_ERROR("SQPoll Test ERROR: {}", i);
     }
     std::cout << "Time elapsed: " << t.elapsed() << " seconds\n";
 }
