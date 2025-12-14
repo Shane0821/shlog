@@ -15,12 +15,14 @@
 #include "mpmc_queue.hpp"
 #include "singleton.hpp"
 
+namespace shlog {
+
+enum class LogLevel { TRACE, DEBUG, INFO, WARNING, ERROR, FATAL };
+
 class Logger : public Singleton<Logger> {
     friend class Singleton<Logger>;
 
    public:
-    enum class LogLevel { TRACE, DEBUG, INFO, WARNING, ERROR, FATAL };
-
     ~Logger();
 
     // Initialize logger with output file
@@ -45,9 +47,9 @@ class Logger : public Singleton<Logger> {
     }
 
     void setLogLevel(LogLevel level) { level_ = level; }
-    Logger::LogLevel getLogLevel() const { return level_; }
+    LogLevel getLogLevel() const { return level_; }
 
-    void setLogSink(std::unique_ptr<LogSinkBase> sink) { sink_ = std::move(sink); }
+    void setLogSink(SinkPtr sink) { sink_ = std::move(sink); }
 
    protected:
     Logger() = default;
@@ -79,7 +81,7 @@ class Logger : public Singleton<Logger> {
     // Process log tasks
     void processLogTasks();
 
-    std::unique_ptr<LogSinkBase> sink_;
+    SinkPtr sink_;
     std::mutex mutex_;
     MPMCQueue<std::function<void()>> taskQueue_;
     std::thread processThread_;
@@ -87,19 +89,39 @@ class Logger : public Singleton<Logger> {
     LogLevel level_;
 };
 
-#define LOG_INIT(level, ...) Logger::GetInst().init(level, ##__VA_ARGS__)
+#endif
+}
 
-#define LOG_TRACE(format, ...) \
-    Logger::GetInst().log<Logger::LogLevel::TRACE>(__LINE__, format, ##__VA_ARGS__)
-#define LOG_DEBUG(format, ...) \
-    Logger::GetInst().log<Logger::LogLevel::DEBUG>(__LINE__, format, ##__VA_ARGS__)
-#define LOG_INFO(format, ...) \
-    Logger::GetInst().log<Logger::LogLevel::INFO>(__LINE__, format, ##__VA_ARGS__)
-#define LOG_WARNING(format, ...) \
-    Logger::GetInst().log<Logger::LogLevel::WARNING>(__LINE__, format, ##__VA_ARGS__)
-#define LOG_ERROR(format, ...) \
-    Logger::GetInst().log<Logger::LogLevel::ERROR>(__LINE__, format, ##__VA_ARGS__)
-#define LOG_FATAL(format, ...) \
-    Logger::GetInst().log<Logger::LogLevel::FATAL>(__LINE__, format, ##__VA_ARGS__)
+#define SHLOG_INIT(level, ...) shlog::Logger::GetInst().init(level, ##__VA_ARGS__)
+#define SHLOG_LOGGER_INIT(logger, level, ...) \
+    shlog::logger::GetInst().init(level, ##__VA_ARGS__)
 
-#endif  // _RPC_LOGGER_H
+#define SHLOG_TRACE(format, ...) \
+    shlog::Logger::GetInst().log<shlog::LogLevel::TRACE>(__LINE__, format, ##__VA_ARGS__)
+#define SHLOG_LOGGER_TRACE(logger, format, ...) \
+    shlog::logger::GetInst().log<shlog::LogLevel::TRACE>(__LINE__, format, ##__VA_ARGS__)
+
+#define SHLOG_DEBUG(format, ...) \
+    shlog::Logger::GetInst().log<shlog::LogLevel::DEBUG>(__LINE__, format, ##__VA_ARGS__)
+#define SHLOG_LOGGER_DEBUG(logger, format, ...) \
+    shlog::logger::GetInst().log<shlog::LogLevel::DEBUG>(__LINE__, format, ##__VA_ARGS__)
+
+#define SHLOG_INFO(format, ...) \
+    shlog::Logger::GetInst().log<shlog::LogLevel::INFO>(__LINE__, format, ##__VA_ARGS__)
+#define SHLOG_LOGGER_INFO(flogger, ormat, ...) \
+    shlog::logger::GetInst().log<shlog::LogLevel::INFO>(__LINE__, format, ##__VA_ARGS__)
+
+#define SHLOG_WARN(format, ...) \
+    shlog::Logger::GetInst().log<shlog::LogLevel::WARN>(__LINE__, format, ##__VA_ARGS__)
+#define SHLOG_LOGGER_WARN(flogger, ormat, ...) \
+    shlog::logger::GetInst().log<shlog::LogLevel::WARN>(__LINE__, format, ##__VA_ARGS__)
+
+#define SHLOG_ERROR(format, ...) \
+    shlog::Logger::GetInst().log<shlog::LogLevel::ERROR>(__LINE__, format, ##__VA_ARGS__)
+#define SHLOG_LOGGER_ERROR(logger, format, ...) \
+    shlog::logger::GetInst().log<shlog::LogLevel::ERROR>(__LINE__, format, ##__VA_ARGS__)
+
+#define SHLOG_FATAL(format, ...) \
+    shlog::Logger::GetInst().log<shlog::LogLevel::FATAL>(__LINE__, format, ##__VA_ARGS__)
+#define SHLOG_LOGGER_FATAL(logger, format, ...) \
+    shlog::logger::GetInst().log<shlog::LogLevel::FATAL>(__LINE__, format, ##__VA_ARGS__)

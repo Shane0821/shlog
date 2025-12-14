@@ -1,5 +1,7 @@
 #include "logger.h"
 
+namespace shlog {
+
 Logger::~Logger() {
     stop_ = true;
     if (processThread_.joinable()) {
@@ -7,7 +9,7 @@ Logger::~Logger() {
     }
 }
 
-void Logger::init(LogLevel level, std::unique_ptr<LogSinkBase> sink) {
+void Logger::init(LogLevel level, SinkPtr sink) {
     std::lock_guard<std::mutex> lock(mutex_);
 
     if (processThread_.joinable()) {
@@ -34,3 +36,4 @@ void Logger::processLogTasks() {
         }
     }
 }
+}  // namespace shlog
