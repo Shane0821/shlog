@@ -69,11 +69,14 @@ void StandardFileSink::flush() { ::fsync(fd_); }
 
 // *******************************
 
-UringFileSink::UringFileSink() { aio_.register_fds(&fd_, 1); }
+UringFileSink::UringFileSink(const std::string& path, bool append)
+    : FileSinkBase(path, append) {
+    aio_.register_fds(&fd_, 1);
+}
 
 UringFileSink::~UringFileSink() { flush(); }
 
 void UringFileSink::log(LogMessage& msg) { aio_.write_async(msg, -1, 0); }
 
 void UringFileSink::flush() { aio_.fsync_and_wait(0); }
-}
+}  // namespace shlog
