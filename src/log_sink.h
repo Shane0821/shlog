@@ -40,7 +40,7 @@ class FileSinkBase : public LogSinkBase {
 
 class StandardFileSink : public FileSinkBase {
    public:
-    StandardFileSink() = default;
+    using FileSinkBase::FileSinkBase;
     ~StandardFileSink();
 
     virtual void log(LogMessage&) override;
@@ -49,7 +49,7 @@ class StandardFileSink : public FileSinkBase {
 
 class UringFileSink : public FileSinkBase {
    public:
-    UringFileSink();
+    UringFileSink(const std::string& path = "", bool append = false);
     ~UringFileSink();
 
     virtual void log(LogMessage&) override;
