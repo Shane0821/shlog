@@ -1,0 +1,9 @@
+@PACKAGE_INIT@
+
+# Optionally expose options or variables here
+
+# If you have dependencies, find them here for consumers, e.g.:
+# include(CMakeFindDependencyMacro)
+# find_dependency(fmt REQUIRED)
+
+include("${CMAKE_CURRENT_LIST_DIR}/shlog-targets.cmake")
