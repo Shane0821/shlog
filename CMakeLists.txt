@@ -16,6 +16,7 @@ option(BUILD_TEST "Build the test" OFF)
 set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(SRC_DIR "${ROOT_DIR}/src")
 set(INCLUDE_DIR "${ROOT_DIR}/include")
+set(LIBS_DIR "${ROOT_DIR}/libs")
 set(DEMO_DIR "${ROOT_DIR}/demo")
 set(TEST_DIR "${ROOT_DIR}/test")
 set(THIRD_PARTY_DIR "${ROOT_DIR}/3rd")
@@ -29,7 +30,7 @@ include(FetchContent)
 
 include_directories(
     ${INCLUDE_DIR}
-    ${SRC_DIR}
+    ${LIBS_DIR}
 )
 
 # ============================
@@ -56,7 +57,7 @@ FetchContent_MakeAvailable(fmt)
 # Build
 # ============================
 
-add_subdirectory(include)
+# add_subdirectory(libs)
 add_subdirectory(src)
 
 # Conditionally build demo
