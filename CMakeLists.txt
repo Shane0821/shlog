@@ -54,13 +54,11 @@ add_subdirectory(src)
 # Conditionally build demo
 if (SHLOG_BUILD_DEMO)
     add_subdirectory(demo)
-    add_custom_target(demo ALL DEPENDS shlog)
 endif()
 
 # Conditionally build test
 if (SHLOG_BUILD_TEST)
     add_subdirectory(test)
-    add_custom_target(test ALL DEPENDS shlog)
 endif()
 
 # ============================
