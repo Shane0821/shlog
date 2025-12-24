@@ -67,11 +67,13 @@ endif()
 
 add_library(shlog::shlog ALIAS shlog)
 
+set(targets_export_name shlog-targets)
+
 include(GNUInstallDirs)
 
 # Install library and headers
 install(TARGETS shlog
-    EXPORT shlog-targets
+    EXPORT ${targets_export_name}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -80,9 +82,9 @@ install(TARGETS shlog
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # Export targets (to build tree for development) and install tree for consumers
-export(EXPORT shlog-targets
+export(EXPORT ${targets_export_name}
     NAMESPACE shlog::
-    FILE "${CMAKE_CURRENT_BINARY_DIR}/shlog-targets.cmake"
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/${targets_export_name}.cmake"
 )
 
 # Generate Config and Version files
@@ -100,7 +102,7 @@ configure_package_config_file(
 )
 
 # Install exported targets and config files
-install(EXPORT shlog-targets
+install(EXPORT ${targets_export_name}
     NAMESPACE shlog::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/shlog
 )
