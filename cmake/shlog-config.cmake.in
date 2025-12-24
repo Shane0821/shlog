@@ -10,6 +10,9 @@ if(NOT TARGET shlog::shlog)
     message(FATAL_ERROR "Failed to locate shlog::shlog target")
 endif()
 
-# Provide variables
-set(SHLOG_VERSION @PROJECT_VERSION@)
+# Provide version info
+set(shlog_VERSION @PROJECT_VERSION@)
+
+# Provide include directory variable for compatibility
+set(shlog_INCLUDE_DIRS ${PACKAGE_PREFIX_DIR}/include)
 

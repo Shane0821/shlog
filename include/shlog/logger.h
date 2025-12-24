@@ -12,10 +12,10 @@
 #include <thread>
 
 #include "log_sink.h"
-#include "mpmc_queue.hpp"
-#include "noncopyable.h"
-#include "singleton.hpp"
-#include "spsc_queue.hpp"
+#include "libs/mpmc_queue.hpp"
+#include "libs/noncopyable.h"
+#include "libs/singleton.hpp"
+#include "libs/spsc_queue.hpp"
 
 namespace shlog {
 

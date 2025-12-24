@@ -6,9 +6,8 @@ target_sources(shlog PRIVATE ${SRC})
 
 target_include_directories(shlog
     PUBLIC
-    $<BUILD_INTERFACE:${INCLUDE_DIR}/shlog/libs>
-    $<BUILD_INTERFACE:${INCLUDE_DIR}/shlog>
-    $<INSTALL_INTERFACE:include/shlog>
+    $<BUILD_INTERFACE:${INCLUDE_DIR}>
+    $<INSTALL_INTERFACE:include>
 )
 
 set_target_properties(shlog PROPERTIES
