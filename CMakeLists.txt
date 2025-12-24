@@ -65,6 +65,8 @@ endif()
 # Export
 # ============================
 
+add_library(shlog::shlog ALIAS shlog)
+
 include(GNUInstallDirs)
 
 # Install library and headers
