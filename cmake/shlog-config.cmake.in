@@ -2,8 +2,14 @@
 
 # For FetchContent: include from build tree
 if(NOT TARGET shlog::shlog)
-    include("${CMAKE_CURRENT_LIST_DIR}/shlog-targets.cmake")
+    include(${CMAKE_CURRENT_LIST_DIR}/@targets_export_name@.cmake)
+endif()
+
+# Verify target exists
+if(NOT TARGET shlog::shlog)
+    message(FATAL_ERROR "Failed to locate shlog::shlog target")
 endif()
 
 # Provide variables
-set(shlog_VERSION @PROJECT_VERSION@)
+set(SHLOG_VERSION @PROJECT_VERSION@)
+
