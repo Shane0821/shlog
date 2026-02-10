@@ -4,6 +4,7 @@
 #include <atomic>
 #include <memory>
 
+namespace shlog {
 // Simple lock-free single-producer single-consumer queue
 template <typename T, size_t Capacity = 65536>
 class SPSCQueue : private std::allocator<T> {
@@ -71,3 +72,4 @@ class SPSCQueue : private std::allocator<T> {
 };
 
 #endif  // _SPSC_QUEUE_H
+}

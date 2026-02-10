@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <vector>
 
+namespace shlog {
 enum class SQ_POLL { DISABLED, ENABLED };
 
 enum class FD_FIXED { NO, YES };
@@ -245,3 +246,4 @@ class UringAIO {
 };
 
 #endif
+}

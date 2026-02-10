@@ -1,6 +1,7 @@
 #ifndef _SINGLETON_H
 #define _SINGLETON_H
 
+namespace shlog {
 // T must be: no-throw default constructible and no-throw destructible
 template <typename T>
 class Singleton {
@@ -42,3 +43,4 @@ template <typename T>
 typename Singleton<T>::object_creator Singleton<T>::create_object;
 
 #endif  // _SINGLETON_H
+}

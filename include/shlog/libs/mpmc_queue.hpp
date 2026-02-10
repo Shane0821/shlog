@@ -4,6 +4,7 @@
 #include <atomic>
 #include <memory>
 
+namespace shlog {
 // multi-producer multi-consumer queue
 template <typename T, size_t Capacity = 65536>
 class MPMCQueue : private std::allocator<T> {
@@ -17,8 +18,8 @@ class MPMCQueue : private std::allocator<T> {
     }
 
     // non-copyable
-    MPMCQueue(const MPMCQueue &) = delete;
-    MPMCQueue &operator=(const MPMCQueue &) = delete;
+    MPMCQueue(const MPMCQueue&) = delete;
+    MPMCQueue& operator=(const MPMCQueue&) = delete;
 
     ~MPMCQueue() {
         std::destroy(data_, data_ + Capacity);
@@ -27,9 +28,9 @@ class MPMCQueue : private std::allocator<T> {
     }
 
     template <typename... Args>
-    void emplace(Args &&...args) noexcept(
-        std::is_nothrow_constructible<T, Args &&...>::value) {
-        static_assert(std::is_constructible<T, Args &&...>::value,
+    void emplace(Args&&... args) noexcept(
+        std::is_nothrow_constructible<T, Args&&...>::value) {
+        static_assert(std::is_constructible<T, Args&&...>::value,
                       "T must be constructible with Args&&...");
 
         auto tail = tail_.fetch_add(1);  // tail: before increment
@@ -40,7 +41,7 @@ class MPMCQueue : private std::allocator<T> {
         ticket_[id].store(turn(tail) * 2 + 1, std::memory_order_release);
     }
 
-    void pop(T &result) noexcept {
+    void pop(T& result) noexcept {
         static_assert(std::is_nothrow_destructible<T>::value,
                       "T must be nothrow destructible");
 
@@ -69,10 +70,11 @@ class MPMCQueue : private std::allocator<T> {
 
     constexpr size_t turn(size_t i) const noexcept { return i / Capacity; }
 
-    T *data_;
-    std::atomic<size_t> *ticket_;
+    T* data_;
+    std::atomic<size_t>* ticket_;
     std::atomic<size_t> head_{0};
     std::atomic<size_t> tail_{0};
 };
 
 #endif  // _MPMC_QUEUE_H
+}
