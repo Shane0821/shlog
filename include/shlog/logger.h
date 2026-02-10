@@ -11,11 +11,11 @@
 #include <string>
 #include <thread>
 
-#include "log_sink.h"
 #include "libs/mpmc_queue.hpp"
 #include "libs/noncopyable.h"
 #include "libs/singleton.hpp"
 #include "libs/spsc_queue.hpp"
+#include "log_sink.h"
 
 namespace shlog {
 
@@ -71,16 +71,16 @@ class MTLogger : public LoggerBase, public Singleton<MTLogger> {
 
     // add a log task to the queue
     template <LogLevel Level, typename... Args>
-    void log(int line, const std::string& format, Args&&... args) {
+    void log(const char* filename, int line, const std::string& format, Args&&... args) {
         if (Level < level_) return;
 
         if (stop_) return;
 
         taskQueue_.emplace(
-            [... args = std::forward<Args>(args), line, format, this]() mutable {
+            [... args = std::forward<Args>(args), filename, line, format, this]() mutable {
                 auto pid = std::this_thread::get_id();
                 auto logLine = fmt::format("[{}][{}][{}][{}:{}]: {}\n", *(size_t*)&pid,
-                                           time(NULL), levelToString<Level>(), __FILE__,
+                                           time(NULL), levelToString<Level>(), filename,
                                            line, fmt::format(format, std::move(args)...));
                 sink_->log(logLine);
             });
@@ -111,16 +111,16 @@ class STLogger : public LoggerBase, public Singleton<STLogger> {
 
     // add a log task to the queue
     template <LogLevel Level, typename... Args>
-    void log(int line, const std::string& format, Args&&... args) {
+    void log(const char* filename, int line, const std::string& format, Args&&... args) {
         if (Level < level_) return;
 
         if (stop_) return;
 
-        taskQueue_.emplace([... args = std::forward<Args>(args), line, format,
+        taskQueue_.emplace([... args = std::forward<Args>(args), filename, line, format,
                             this]() mutable {
             auto logLine =
                 fmt::format("[{}][{}][{}:{}]: {}\n", time(NULL), levelToString<Level>(),
-                            __FILE__, line, fmt::format(format, std::move(args)...));
+                            filename, line, fmt::format(format, std::move(args)...));
             sink_->log(logLine);
         });
     }
@@ -146,38 +146,44 @@ using DefaultLogger = STLogger;
 #define SHLOG_INIT(level, ...) shlog::DefaultLogger::GetInst().init(level, ##__VA_ARGS__)
 #define SHLOG_LOGGER_INIT(logger, level, ...) logger::GetInst().init(level, ##__VA_ARGS__)
 
-#define SHLOG_TRACE(format, ...)                                                  \
-    shlog::DefaultLogger::GetInst().log<shlog::LogLevel::TRACE>(__LINE__, format, \
-                                                                ##__VA_ARGS__)
-#define SHLOG_LOGGER_TRACE(logger, format, ...) \
-    logger::GetInst().log<shlog::LogLevel::TRACE>(__LINE__, format, ##__VA_ARGS__)
+#define SHLOG_TRACE(format, ...)                                                         \
+    shlog::DefaultLogger::GetInst().log<shlog::LogLevel::TRACE>(__FILE__, __LINE__, \
+                                                                format, ##__VA_ARGS__)
+#define SHLOG_LOGGER_TRACE(logger, format, ...)                                    \
+    logger::GetInst().log<shlog::LogLevel::TRACE>(__FILE__, __LINE__, format, \
+                                                  ##__VA_ARGS__)
 
-#define SHLOG_DEBUG(format, ...)                                                  \
-    shlog::DefaultLogger::GetInst().log<shlog::LogLevel::DEBUG>(__LINE__, format, \
-                                                                ##__VA_ARGS__)
-#define SHLOG_LOGGER_DEBUG(logger, format, ...) \
-    logger::GetInst().log<shlog::LogLevel::DEBUG>(__LINE__, format, ##__VA_ARGS__)
+#define SHLOG_DEBUG(format, ...)                                                         \
+    shlog::DefaultLogger::GetInst().log<shlog::LogLevel::DEBUG>(__FILE__, __LINE__, \
+                                                                format, ##__VA_ARGS__)
+#define SHLOG_LOGGER_DEBUG(logger, format, ...)                                    \
+    logger::GetInst().log<shlog::LogLevel::DEBUG>(__FILE__, __LINE__, format, \
+                                                  ##__VA_ARGS__)
 
-#define SHLOG_INFO(format, ...)                                                  \
-    shlog::DefaultLogger::GetInst().log<shlog::LogLevel::INFO>(__LINE__, format, \
-                                                               ##__VA_ARGS__)
-#define SHLOG_LOGGER_INFO(logger, format, ...) \
-    logger::GetInst().log<shlog::LogLevel::INFO>(__LINE__, format, ##__VA_ARGS__)
+#define SHLOG_INFO(format, ...)                                                         \
+    shlog::DefaultLogger::GetInst().log<shlog::LogLevel::INFO>(__FILE__, __LINE__, \
+                                                               format, ##__VA_ARGS__)
+#define SHLOG_LOGGER_INFO(logger, format, ...)                                    \
+    logger::GetInst().log<shlog::LogLevel::INFO>(__FILE__, __LINE__, format, \
+                                                 ##__VA_ARGS__)
 
-#define SHLOG_WARN(format, ...)                                                  \
-    shlog::DefaultLogger::GetInst().log<shlog::LogLevel::WARN>(__LINE__, format, \
-                                                               ##__VA_ARGS__)
-#define SHLOG_LOGGER_WARN(logger, format, ...) \
-    logger::GetInst().log<shlog::LogLevel::WARN>(__LINE__, format, ##__VA_ARGS__)
+#define SHLOG_WARN(format, ...)                                                         \
+    shlog::DefaultLogger::GetInst().log<shlog::LogLevel::WARN>(__FILE__, __LINE__, \
+                                                               format, ##__VA_ARGS__)
+#define SHLOG_LOGGER_WARN(logger, format, ...)                                    \
+    logger::GetInst().log<shlog::LogLevel::WARN>(__FILE__, __LINE__, format, \
+                                                 ##__VA_ARGS__)
 
-#define SHLOG_ERROR(format, ...)                                                  \
-    shlog::DefaultLogger::GetInst().log<shlog::LogLevel::ERROR>(__LINE__, format, \
-                                                                ##__VA_ARGS__)
-#define SHLOG_LOGGER_ERROR(logger, format, ...) \
-    logger::GetInst().log<shlog::LogLevel::ERROR>(__LINE__, format, ##__VA_ARGS__)
+#define SHLOG_ERROR(format, ...)                                                         \
+    shlog::DefaultLogger::GetInst().log<shlog::LogLevel::ERROR>(__FILE__, __LINE__, \
+                                                                format, ##__VA_ARGS__)
+#define SHLOG_LOGGER_ERROR(logger, format, ...)                                    \
+    logger::GetInst().log<shlog::LogLevel::ERROR>(__FILE__, __LINE__, format, \
+                                                  ##__VA_ARGS__)
 
-#define SHLOG_FATAL(format, ...)                                                  \
-    shlog::DefaultLogger::GetInst().log<shlog::LogLevel::FATAL>(__LINE__, format, \
-                                                                ##__VA_ARGS__)
-#define SHLOG_LOGGER_FATAL(logger, format, ...) \
-    logger::GetInst().log<shlog::LogLevel::FATAL>(__LINE__, format, ##__VA_ARGS__)
+#define SHLOG_FATAL(format, ...)                                                         \
+    shlog::DefaultLogger::GetInst().log<shlog::LogLevel::FATAL>(__FILE__, __LINE__, \
+                                                                format, ##__VA_ARGS__)
+#define SHLOG_LOGGER_FATAL(logger, format, ...)                                    \
+    logger::GetInst().log<shlog::LogLevel::FATAL>(__FILE__, __LINE__, format, \
+                                                  ##__VA_ARGS__)
