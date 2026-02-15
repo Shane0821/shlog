@@ -19,7 +19,7 @@
 
 namespace shlog {
 
-enum class LogLevel { TRACE, DEBUG, INFO, WARNING, ERROR, FATAL, NONE };
+enum class LogLevel { TRACE, DEBUG, INFO, WARN, ERROR, FATAL, NONE };
 
 class LoggerBase : noncopyable {
    public:
@@ -44,8 +44,8 @@ class LoggerBase : noncopyable {
             return "DEBUG";
         } else if constexpr (level == LogLevel::INFO) {
             return "INFO";
-        } else if constexpr (level == LogLevel::WARNING) {
-            return "WARNING";
+        } else if constexpr (level == LogLevel::WARN) {
+            return "WARN";
         } else if constexpr (level == LogLevel::ERROR) {
             return "ERROR";
         } else if constexpr (level == LogLevel::FATAL) {
